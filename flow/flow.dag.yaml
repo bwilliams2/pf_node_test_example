@@ -1,0 +1,32 @@
+$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json
+environment:
+  python_requirements_txt: requirements.txt
+inputs:
+  text:
+    type: string
+outputs:
+  output_prompt:
+    type: string
+    reference: ${echo.output}
+nodes:
+- name: hello_prompt
+  type: prompt
+  source:
+    type: code
+    path: hello.jinja2
+  inputs:
+    text: ${inputs.text}
+- name: echo_object
+  type: python
+  source:
+    type: code
+    path: echo_object.py
+  inputs:
+    input1: ${hello_prompt.output}
+- name: echo
+  type: python
+  source:
+    type: code
+    path: echo.py
+  inputs:
+    echo: ${echo_object.output.echo}
